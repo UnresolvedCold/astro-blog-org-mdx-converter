@@ -32,7 +32,7 @@ def convert_org_to_mdx(org_content):
     for org_line in org_content.split("\n"):
         # convert org heading to md heading
         if org_line.startswith("*"):
-            md_line = re.sub(r"^\*+", lambda x: "#" * len(x.group(0)), org_line)
+            md_line = r'#'+re.sub(r"^\*+", lambda x: "#" * len(x.group(0)), org_line)
             md_content += md_line + "\n"
 
         # Convert code block to md code block
@@ -75,7 +75,7 @@ def convert_org_to_mdx(org_content):
             org_line = re.sub(r"\[\s\]", lambda x: "- [ ]", org_line)
             org_line = re.sub(r"\[X\]", lambda x: "- [x]", org_line)
 
-            md_content += org_line + "\n"
+            md_content += org_line + "\n"        
 
     return get_frontmatter(metadata) + md_content
 
