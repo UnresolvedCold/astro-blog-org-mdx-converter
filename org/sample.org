@@ -22,3 +22,12 @@ echo hello
 
 #+RESULTS:
 : hello
+
+*** Png file
+
+[[../sample.png]]
+
+*** Checkbox
++ [ ] hi
+- fdf
+- [ ] fd

@@ -2,12 +2,28 @@
 import re
 import os
 
+def get_frontmatter(metadata):
+    frontmatter = "---\n"
+    for meta in metadata:
+        key, value = meta.split(" ")[0][2:], meta.split(" ")[1:]
+        value = " ".join(value)
+        frontmatter += f"{key}: {value}\n"
+    frontmatter += "---\n"
+    return frontmatter
+
+def replace_image(match):
+    url = match.group(1)
+    print(f"Image URL: {url}")
+    return f'<BlogImageWithContext src={{BrowserCode}} alt="" width="300" aspectRatio="16/9"/>'
+
+
 def convert_org_to_mdx(org_content):
     # iterate line wise
     md_content = ""
     frontmatter = ""
     in_code_block = False
     in_result_block = False
+    metadata = []
 
     for org_line in org_content.split("\n"):
         # convert org heading to md heading
@@ -33,7 +49,8 @@ def convert_org_to_mdx(org_content):
         elif in_result_block and not org_line.startswith(":"):
             md_content += '```' + "\n"
             in_result_block = False
-
+        elif org_line.startswith("#+"):
+            metadata.append(org_line)
         # Normal line    
         else:
             # Bold
@@ -47,16 +64,16 @@ def convert_org_to_mdx(org_content):
             # Link
             org_line = re.sub(r"\[\[(.*?)\]\[(.*?)\]\]", lambda x: "[" + x.group(2) + "](" + x.group(1) + ")", org_line)
             # Image
-            org_line = re.sub(r"\[\[(.*?)\]\]", lambda x: "![" + x.group(1) + "](" + x.group(1) + ")", org_line)
+            org_line = re.sub(r'\[\[([^\]]+)\]\]', replace_image, org_line)
             # Table
             org_line = re.sub(r"\|", lambda x: " | ", org_line)
             # Checkbox
             org_line = re.sub(r"\[\s\]", lambda x: "- [ ]", org_line)
             org_line = re.sub(r"\[X\]", lambda x: "- [x]", org_line)
-            
+
             md_content += org_line + "\n"
 
-    return md_content
+    return get_frontmatter(metadata) + md_content
 
 def convert_org_files_to_mdx(org_folder, mdx_folder):
     # Ensure mdx folder exists
