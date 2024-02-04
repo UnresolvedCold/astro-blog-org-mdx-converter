@@ -5,9 +5,13 @@ import os
 def get_frontmatter(metadata):
     frontmatter = "---\n"
     for meta in metadata:
+        print (f"Metadata: {meta}")
+        # REmove PROPERTY::
+        meta = meta.replace(r"PROPERTY: ", r"")
+
         key, value = meta.split(" ")[0][2:], meta.split(" ")[1:]
         value = " ".join(value)
-        frontmatter += f"{key}: {value}\n"
+        frontmatter += f"{key} {value}\n"
     frontmatter += "---\n"
     return frontmatter
 
